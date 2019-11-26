@@ -136,7 +136,7 @@ def test_backup_slip39_basic(client):
 
 
 @pytest.mark.skip_t1
-@pytest.mark.setup_client(needs_backup=True, mnemonic=MNEMONIC_SLIP39_ADVANCED_20)
+@pytest.mark.setup_client(needs_backup=True, mnemonic=MNEMONIC_SLIP39_ADVANCED_20, random_seed=0)
 def test_backup_slip39_advanced(client):
     assert client.features.needs_backup is True
     mnemonics = []
