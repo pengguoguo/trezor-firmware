@@ -43,7 +43,8 @@ if __debug__:
         display.bar(Display.WIDTH - 8, 0, 8, 8, 0xF800)
         display.refresh()
 
-        if utils.SAVE_SCREEN or apps.debug.save_screen:
+        from trezor import workflow
+        if utils.SAVE_SCREEN or (apps.debug.save_screen and workflow.default_task is None):
             display.save(apps.debug.save_screen_directory + "/refresh-")
 
 
