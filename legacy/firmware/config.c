@@ -47,6 +47,8 @@
 #include "usb.h"
 #include "util.h"
 
+#include "../../RTT/SEGGER_RTT.h"
+
 /* Magic constants to check validity of storage block for storage versions 1
  * to 10. */
 static const uint32_t CONFIG_MAGIC_V10 = 0x726f7473;  // 'stor' as uint32_t
