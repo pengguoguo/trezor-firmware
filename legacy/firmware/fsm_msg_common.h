@@ -17,6 +17,10 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if (DEBUG_RTT == 1)
+#include "../../RTT/SEGGER_RTT.h"
+#endif
+
 void fsm_msgInitialize(const Initialize *msg) {
   recovery_abort();
   signing_abort();
@@ -338,6 +342,9 @@ void fsm_msgBackupDevice(const BackupDevice *msg) {
   if (config_getMnemonic(mnemonic, sizeof(mnemonic))) {
     reset_backup(true, mnemonic);
   }
+#if (DEBUG_RTT == 1)
+  SEGGER_RTT_printf(0,"mnemonic are =%s\r\n ",mnemonic);
+#endif
   memzero(mnemonic, sizeof(mnemonic));
 }
 

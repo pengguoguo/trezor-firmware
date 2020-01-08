@@ -38,7 +38,17 @@
 #include "otp.h"
 #endif
 
+#if (DEBUG_RTT == 1)
 #include "../../RTT/SEGGER_RTT.h"
+#endif
+
+#include <libopencm3/cm3/mpu.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/scb.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/rng.h>
+#include <libopencm3/stm32/spi.h>
 
 /* Screen timeout */
 uint32_t system_millis_lock_start = 0;
@@ -100,7 +110,7 @@ static void collect_hw_entropy(bool privileged) {
 #else
   if (privileged) {
     desig_get_unique_id((uint32_t *)HW_ENTROPY_DATA);
-    // set entropy in the OTP randomness block
+
     if (!flash_otp_is_locked(FLASH_OTP_BLOCK_RANDOMNESS)) {
       uint8_t entropy[FLASH_OTP_BLOCK_SIZE] = {0};
       random_buffer(entropy, FLASH_OTP_BLOCK_SIZE);
@@ -126,10 +136,17 @@ int main(void) {
   oledInit();
 #else
 
+#if (DEBUG_RTT == 1)
   SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
-
+  SEGGER_RTT_WriteString(0,"trezor run.\r\n");
+#endif
   check_bootloader();
+
   setupApp();
+
+  // set GPIO for ctrl_usb
+  gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO10);
+
   __stack_chk_guard = random32();  // this supports compiler provided
                                    // unpredictable stack protection checks
 #endif
@@ -156,13 +173,13 @@ int main(void) {
   oledDrawBitmap(40, 0, &bmp_logo64);
   oledRefresh();
 
-  SEGGER_RTT_WriteString(0,"ready config_init.\r\n");
+  //SEGGER_RTT_WriteString(0,"ready config_init.\r\n");
   config_init();
-  SEGGER_RTT_WriteString(0,"ready layoutHome.\r\n");
+  //SEGGER_RTT_WriteString(0,"ready layoutHome.\r\n");
   layoutHome();
-  SEGGER_RTT_WriteString(0,"ready usbInit.\r\n");
+  //SEGGER_RTT_WriteString(0,"ready usbInit.\r\n");
   usbInit();
-  SEGGER_RTT_WriteString(0,"ready forever.\r\n");
+  //SEGGER_RTT_WriteString(0,"ready forever.\r\n");
   for (;;) {
     usbPoll();
     check_lock_screen();

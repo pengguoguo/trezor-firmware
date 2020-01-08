@@ -34,6 +34,10 @@
 #include "rng.h"
 #include "usb.h"
 
+#if (DEBUG_RTT == 1)
+#include "../../RTT/SEGGER_RTT.h"
+#endif
+
 /* number of words expected in the new seed */
 static uint32_t word_count;
 
@@ -281,6 +285,10 @@ static void display_choices(bool twoColumn, char choices[9][12], int num) {
   if (word_index % 4 == 0) {
     char desc[] = "##th word";
     int nr = (word_index / 4) + 1;
+
+#if (DEBUG_RTT == 1)
+    SEGGER_RTT_printf(0,"mnemonic index = %d\r\n",nr);
+#endif
     format_number(desc, nr);
     layoutDialogSwipe(&bmp_icon_info, NULL, NULL, NULL, _("Please enter the"),
                       (nr < 10 ? desc + 1 : desc), _("of your mnemonic"), NULL,

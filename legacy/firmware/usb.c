@@ -36,6 +36,14 @@
 #include "webusb.h"
 #include "winusb.h"
 
+#include <libopencm3/cm3/mpu.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/scb.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/rng.h>
+#include <libopencm3/stm32/spi.h>
+
 #define USB_INTERFACE_INDEX_MAIN 0
 #if DEBUG_LINK
 #define USB_INTERFACE_INDEX_DEBUG 1
@@ -64,6 +72,7 @@
 #define ENDPOINT_ADDRESS_U2F_IN (0x83)
 #define ENDPOINT_ADDRESS_U2F_OUT (0x03)
 #endif
+
 
 #define USB_STRINGS                                 \
   X(MANUFACTURER, "SatoshiLabs")                    \
@@ -383,6 +392,9 @@ static const struct usb_bos_descriptor bos_descriptor = {
     .capabilities = capabilities};
 
 void usbInit(void) {
+
+	gpio_set(GPIOC, GPIO10);
+
   usbd_dev = usbd_init(&otgfs_usb_driver, &dev_descr, &config, usb_strings,
                        sizeof(usb_strings) / sizeof(*usb_strings),
                        usbd_control_buffer, sizeof(usbd_control_buffer));

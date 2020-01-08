@@ -68,6 +68,7 @@ bool protectButton(ButtonRequestType type, bool confirm_only) {
     if (acked) {
       usbSleep(5);
       buttonUpdate();
+      button.YesUp = 1;
       if (button.YesUp) {
         result = true;
         break;
@@ -190,9 +191,9 @@ secbool protectPinUiCallback(uint32_t wait, uint32_t progress,
     return sectrue;
   }
 
-  SEGGER_RTT_printf(0,"message %s.\r\n",message);
+  //SEGGER_RTT_printf(0,"message %s.\r\n",message);
 
-  SEGGER_RTT_WriteString(0,"protectPinUiCallback.\r\n");
+  //SEGGER_RTT_WriteString(0,"protectPinUiCallback.\r\n");
   return secfalse;
 }
 

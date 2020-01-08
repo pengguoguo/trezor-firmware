@@ -985,7 +985,7 @@ static secbool unlock(uint32_t pin, const uint8_t *ext_salt) {
           progress = ((ui_total - ui_rem) * 10 + i) * 100 / ui_total;
         }
         if (sectrue == ui_callback(ui_rem, progress, ui_message)) {
-        	SEGGER_RTT_WriteString(0,"UI_CB secfalse.\r\n");
+        	//SEGGER_RTT_WriteString(0,"UI_CB secfalse.\r\n");
           return secfalse;
         }
       }
@@ -1055,11 +1055,11 @@ secbool storage_unlock(uint32_t pin, const uint8_t *ext_salt) {
   } else {
     ui_message = VERIFYING_PIN_MSG;
   }
-  SEGGER_RTT_printf(0,"storage_unlock pin = %u\r\n",pin);
+  //SEGGER_RTT_printf(0,"storage_unlock pin = %u\r\n",pin);
 
-  SEGGER_RTT_printf(0,"storage_unlock ui_message = %s\r\n",ui_message);
+  //SEGGER_RTT_printf(0,"storage_unlock ui_message = %s\r\n",ui_message);
 
-  SEGGER_RTT_WriteString(0,"storage_unlock enter unlock.\r\n");
+  //SEGGER_RTT_WriteString(0,"storage_unlock enter unlock.\r\n");
 
   return unlock(pin, ext_salt);
 }
@@ -1330,6 +1330,8 @@ secbool storage_change_pin(uint32_t oldpin, uint32_t newpin,
     return secfalse;
   }
 
+  //SEGGER_RTT_WriteString(0,"storage_change_pin \r\n");
+
   ui_total = 2 * DERIVE_SECS;
   ui_rem = ui_total;
   ui_message = (oldpin != PIN_EMPTY && newpin == PIN_EMPTY) ? VERIFYING_PIN_MSG
@@ -1359,6 +1361,8 @@ secbool storage_change_wipe_code(uint32_t pin, const uint8_t *ext_salt,
     memzero(&wipe_code, sizeof(wipe_code));
     return secfalse;
   }
+
+  //SEGGER_RTT_WriteString(0,"storage_change_wipe_code \r\n");
 
   ui_total = DERIVE_SECS;
   ui_rem = ui_total;
@@ -1472,10 +1476,12 @@ static secbool storage_upgrade(void) {
     ui_rem = ui_total;
     ui_message = PROCESSING_MSG;
     if (sectrue == norcow_get(V0_PIN_KEY, &val, &len)) {
+    	//SEGGER_RTT_printf(0,"sectrue V0_PIN_KEY val = %u.\r\n",val);
+    	//SEGGER_RTT_printf(0,"sectrue V0_PIN_KEY len = %u.\r\n",len);
       set_pin(*(const uint32_t *)val, NULL);
     } else {
-    SEGGER_RTT_printf(0,"val = %u.\r\n",val);
-    SEGGER_RTT_printf(0,"len = %u.\r\n",len);
+    //SEGGER_RTT_printf(0,"secfalse V0_PIN_KEY val = %u.\r\n",val);
+    //SEGGER_RTT_printf(0,"secfalse V0_PIN_KEY len = %u.\r\n",len);
     set_pin(PIN_EMPTY, NULL);
     }
 

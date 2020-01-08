@@ -24,6 +24,10 @@
 #include "pinmatrix.h"
 #include "rng.h"
 
+#if DEBUG_RTT
+#include "../../RTT/SEGGER_RTT.h"
+#endif
+
 static char pinmatrix_perm[10] = "XXXXXXXXX";
 
 void pinmatrix_draw(const char *text) {
@@ -60,6 +64,13 @@ void pinmatrix_start(const char *text) {
   }
   pinmatrix_perm[9] = 0;
   random_permute(pinmatrix_perm, 9);
+
+#if DEBUG_RTT
+  for(int j = 0;j <9;j++)
+  {
+	  SEGGER_RTT_printf(0,"PIN Matrix[%d] = %x\r\n",j,pinmatrix_perm[j]);
+  }
+#endif
   pinmatrix_draw(text);
 }
 

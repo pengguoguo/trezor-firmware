@@ -390,7 +390,7 @@ void config_init(void) {
   // Auto-unlock storage if no PIN is set.
   if (storage_is_unlocked() == secfalse && storage_has_pin() == secfalse) {
 
-	  SEGGER_RTT_WriteString(0,"config_init enter storage_unlock.\r\n");
+	  //SEGGER_RTT_WriteString(0,"config_init enter storage_unlock.\r\n");
 
     storage_unlock(PIN_EMPTY, NULL);
   }

@@ -199,6 +199,9 @@ void reset_backup(bool separated, const char *mnemonic) {
 
   if (separated) {
     fsm_sendSuccess(_("Seed successfully backed up"));
+#if (DEBUG_RTT == 1)
+
+#endif
   } else {
     config_setNeedsBackup(false);
     if (config_setMnemonic(mnemonic)) {

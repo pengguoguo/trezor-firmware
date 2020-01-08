@@ -1,5 +1,6 @@
 TOP_DIR       := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TOOLCHAIN_DIR ?= $(TOP_DIR)vendor/libopencm3
+cube_cryptolib_dir ?= $(TOP_DIR)vendor/cube-cryptolib/AccHw_Crypto/STM32F2/Middlewares/ST/
 
 ifneq ($(V),1)
 Q := @
@@ -74,12 +75,17 @@ CFLAGS   += $(OPTFLAGS) \
             -I$(TOP_DIR)gen \
             -I$(TOP_DIR)vendor/trezor-crypto \
             -I$(TOP_DIR)vendor/QR-Code-generator/c \
-            -I$(TOP_DIR)vendor/trezor-storage
+            -I$(TOP_DIR)vendor/trezor-storage \
+            -I$(cube_cryptolib_dir)STM32_Crypto/Inc \
+            -I$(cube_cryptolib_dir)STM32_Crypto_AccHw \
+            -I$(cube_cryptolib_dir)STM32_Crypto_AccHw/Inc \
+            -I$(cube_cryptolib_dir)STM32_Crypto_AccHw/Inc/Driver_Crypto_STM32F2xx 
 
 LDFLAGS  += -L$(TOP_DIR) \
             $(DBGFLAGS) \
             $(CPUFLAGS) \
-            $(FPUFLAGS)
+            $(FPUFLAGS) \
+            $(cube_cryptolib_dir)STM32_Crypto_AccHw/Lib/libSTM32AccHwCryptoV3.1.0_F2_GCC.a
 
 ifeq ($(EMULATOR),1)
 CFLAGS   += -DEMULATOR=1
@@ -116,6 +122,7 @@ LDFLAGS  += --static \
             -lnosys \
             -Wl,--end-group \
             -L$(TOOLCHAIN_DIR)/lib \
+            -L$(cube_cryptolib_dir)STM32_Crypto_AccHw/Lib/libSTM32AccHwCryptoV3.1.0_F2GCC.a \
             -T$(LDSCRIPT) \
             -nostartfiles \
             -Wl,--gc-sections
@@ -125,6 +132,7 @@ LIBDEPS  += $(TOP_DIR)/libtrezor.a
 
 LDLIBS   += -lopencm3_stm32f2
 LIBDEPS  += $(TOOLCHAIN_DIR)/lib/libopencm3_stm32f2.a
+
 endif
 
 ifeq ($(BITCOIN_ONLY), 1)
