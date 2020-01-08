@@ -188,7 +188,8 @@ AccHw_RSAinOut_stt DeOut_st;
 int main(void) {
 #ifndef APPVER
   setup();
-
+  //test stm32's CryptoLib
+#if 0
   mb.mSize = sizeof(preallocated_buffer_RSAEncDec);
   mb.mUsed = 0;
   mb.pmBuf = preallocated_buffer_RSAEncDec;
@@ -222,6 +223,8 @@ int main(void) {
   {
 	  ;
   }
+
+#endif
 
 #endif
   __stack_chk_guard = random32();  // this supports compiler provided
