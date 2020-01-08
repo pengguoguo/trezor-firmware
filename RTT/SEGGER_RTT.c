@@ -141,7 +141,7 @@ Additional information:
 #endif
 
 #ifndef   MIN
-  #define MIN(a, b)         (((a) < (b)) ? (a) : (b))
+  #define RTT_MIN(a, b)         (((a) < (b)) ? (a) : (b))
 #endif
 
 #ifndef   MAX
@@ -337,8 +337,8 @@ static unsigned _WriteBlocking(SEGGER_RTT_BUFFER_UP* pRing, const char* pBuffer,
     } else {
       NumBytesToWrite = pRing->SizeOfBuffer - (WrOff - RdOff + 1u);
     }
-    NumBytesToWrite = MIN(NumBytesToWrite, (pRing->SizeOfBuffer - WrOff));      // Number of bytes that can be written until buffer wrap-around
-    NumBytesToWrite = MIN(NumBytesToWrite, NumBytes);
+    NumBytesToWrite = RTT_MIN(NumBytesToWrite, (pRing->SizeOfBuffer - WrOff));      // Number of bytes that can be written until buffer wrap-around
+    NumBytesToWrite = RTT_MIN(NumBytesToWrite, NumBytes);
     memcpy(pRing->pBuffer + WrOff, pBuffer, NumBytesToWrite);
     NumBytesWritten += NumBytesToWrite;
     pBuffer         += NumBytesToWrite;
@@ -491,7 +491,7 @@ unsigned SEGGER_RTT_ReadNoLock(unsigned BufferIndex, void* pData, unsigned Buffe
   //
   if (RdOff > WrOff) {
     NumBytesRem = pRing->SizeOfBuffer - RdOff;
-    NumBytesRem = MIN(NumBytesRem, BufferSize);
+    NumBytesRem = RTT_MIN(NumBytesRem, BufferSize);
     memcpy(pBuffer, pRing->pBuffer + RdOff, NumBytesRem);
     NumBytesRead += NumBytesRem;
     pBuffer      += NumBytesRem;
@@ -508,7 +508,7 @@ unsigned SEGGER_RTT_ReadNoLock(unsigned BufferIndex, void* pData, unsigned Buffe
   // Read remaining items of buffer
   //
   NumBytesRem = WrOff - RdOff;
-  NumBytesRem = MIN(NumBytesRem, BufferSize);
+  NumBytesRem = RTT_MIN(NumBytesRem, BufferSize);
   if (NumBytesRem > 0u) {
     memcpy(pBuffer, pRing->pBuffer + RdOff, NumBytesRem);
     NumBytesRead += NumBytesRem;
