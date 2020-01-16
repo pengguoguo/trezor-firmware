@@ -1,8 +1,0 @@
-TxPublicKeyMod.PublicKey_Mod                                max_size:256
-TxPublicKeyModSign.PublicKey_Mod_Sign                       max_size:64
-RspTxPublicKeyMod.Rsp                                       max_size:256
-RspTxPublicKeyModSign.Rsp                                   max_size:256
-TxPublicKeyExp.PublicKey_Exp                                max_size:3
-TxPublicKeyExpSign.PublicKey_Exp                            max_size:64
-RspTxPublicKeyExp.Rsp                                       max_size:256
-RspTxPublicKeyExpSign.Rsp                                   max_size:256

@@ -9,9 +9,3 @@ __pycache__/
 *.pyc
 /build
 proto.gv*
-
-.pydevproject
-
-.project
-
-.cproject

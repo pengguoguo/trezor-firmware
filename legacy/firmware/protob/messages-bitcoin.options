@@ -50,4 +50,4 @@ MultisigRedeemScriptType.signatures                         max_count:15 max_siz
 MultisigRedeemScriptType.nodes                              max_count:15
 MultisigRedeemScriptType.address_n                          max_count:8
 
-HDNodePathType.address_n                                    max_count:8
+HDNodePathType.address_n           max_count:8

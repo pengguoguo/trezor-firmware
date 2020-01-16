@@ -29,8 +29,6 @@
 #include "messages-nem.pb.h"
 #include "messages-stellar.pb.h"
 
-#include "messages-abckey-mnemonic.pb.h"
-#include "messages-abckey-pubkey.pb.h"
 // message functions
 
 void fsm_sendSuccess(const char *text);
@@ -138,12 +136,5 @@ void fsm_msgStellarAllowTrustOp(const StellarAllowTrustOp *msg);
 void fsm_msgStellarAccountMergeOp(const StellarAccountMergeOp *msg);
 void fsm_msgStellarManageDataOp(const StellarManageDataOp *msg);
 void fsm_msgStellarBumpSequenceOp(const StellarBumpSequenceOp *msg);
-
-void fsm_msgTxPublicKeyMod(const TxPublicKeyMod *msg);
-void fsm_msgTxPublicKeyModSign(const TxPublicKeyModSign *msg);
-void fsm_msgTxPublicKeyExp(const TxPublicKeyExp *msg);
-void fsm_msgTxPublicKeyExpSign(const TxPublicKeyExpSign *msg);
-
-void fsm_msgReqMnemonic(const ReqMnemonic *msg);
 
 #endif

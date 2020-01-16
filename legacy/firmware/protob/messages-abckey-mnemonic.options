@@ -1,2 +1,0 @@
-ReqMnemonic.req                       max_size:64
-RspMnemonic.mnemonic                  max_size:256
