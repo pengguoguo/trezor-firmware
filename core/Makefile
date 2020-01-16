@@ -79,6 +79,12 @@ test_emu_fido2: ## run fido2 device tests
 test_emu_click: ## run click tests
 	cd tests ; ./run_tests_click_emu.sh $(TESTOPTS)
 
+test_emu_ui: ## run ui integration tests
+	cd tests ; ./run_tests_device_emu.sh --ui=test -m "not skip_ui" $(TESTOPTS)
+
+test_emu_ui_record: ## record and hash screens for ui integration tests
+	cd tests ; ./run_tests_device_emu.sh --ui=record -m "not skip_ui" $(TESTOPTS)
+
 pylint: ## run pylint on application sources and tests
 	pylint -E $(shell find src tests -name *.py)
 
@@ -122,6 +128,9 @@ build_unix: res ## build unix port
 
 build_unix_frozen: res build_cross ## build unix port with frozen modules
 	$(SCONS) CFLAGS="$(CFLAGS)" $(UNIX_BUILD_DIR)/micropython $(UNIX_PORT_OPTS) PYOPT="$(PYOPT)" BITCOIN_ONLY="$(BITCOIN_ONLY)" TREZOR_EMULATOR_FROZEN=1
+
+build_unix_debug: res ## build unix port
+	$(SCONS) --max-drift=1 CFLAGS="$(CFLAGS)" $(UNIX_BUILD_DIR)/micropython $(UNIX_PORT_OPTS) TREZOR_EMULATOR_ASAN=1 TREZOR_EMULATOR_DEBUGGABLE=1
 
 build_cross: ## build mpy-cross port
 	$(MAKE) -C vendor/micropython/mpy-cross $(CROSS_PORT_OPTS)
@@ -231,3 +240,10 @@ upload: ## upload firmware using trezorctl
 
 upload_prodtest: ## upload prodtest using trezorctl
 	trezorctl firmware_update -f $(PRODTEST_BUILD_DIR)/prodtest.bin
+
+coverage:  # generate coverage report
+	coverage run --source=./src /dev/null 2>/dev/null && \
+	mv .coverage .coverage.empty && \
+	coverage combine .coverage.* && \
+	coverage html
+	grep pc_cov htmlcov/index.html
