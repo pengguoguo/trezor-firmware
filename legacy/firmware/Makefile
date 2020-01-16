@@ -108,6 +108,8 @@ OBJS += protob/messages-common.pb.o
 OBJS += protob/messages-crypto.pb.o
 OBJS += protob/messages-debug.pb.o
 OBJS += protob/messages-management.pb.o
+OBJS += protob/messages-abckey-mnemonic.pb.o
+OBJS += protob/messages-abckey-pubkey.pb.o
 ifneq ($(BITCOIN_ONLY),1)
 OBJS += protob/messages-ethereum.pb.o
 OBJS += protob/messages-lisk.pb.o
