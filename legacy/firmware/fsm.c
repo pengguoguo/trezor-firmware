@@ -261,6 +261,9 @@ static bool fsm_layoutAddress(const char *address, const char *desc,
 #include "fsm_msg_crypto.h"
 #include "fsm_msg_debug.h"
 
+#include "fsm_msg_abckey_pubkey.h"
+#include "fsm_msg_abckey_mnemonic.h"
+
 #if !BITCOIN_ONLY
 
 #include "fsm_msg_ethereum.h"

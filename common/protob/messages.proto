@@ -139,6 +139,20 @@ enum MessageType {
     MessageType_LiskGetPublicKey = 121 [(wire_in) = true];
     MessageType_LiskPublicKey = 122 [(wire_out) = true];
 
+    //abckey_messages
+    MessageType_TxPublicKeyMod = 8000 [(wire_in) = true];
+    MessageType_RspTxPublicKeyMod = 8001 [(wire_out) = true];
+    MessageType_TxPublicKeyModSign = 8002 [(wire_in) = true];
+    MessageType_RspTxPublicKeyModSign = 8003 [(wire_out) = true];
+    MessageType_TxPublicKeyExp = 8004 [(wire_in) = true];
+    MessageType_RspTxPublicKeyExp = 8005 [(wire_out) = true];
+    MessageType_TxPublicKeyExpSign = 8006 [(wire_in) = true];
+    MessageType_RspTxPublicKeyExpSign = 8007 [(wire_out) = true];
+    
+    MessageType_ReqMnemonic = 8008 [(wire_in) = true];
+    MessageType_RspMnemonic = 8009 [(wire_out) = true];
+
+
     // Tezos
     MessageType_TezosGetAddress = 150 [(wire_in) = true];
     MessageType_TezosAddress = 151 [(wire_out) = true];
