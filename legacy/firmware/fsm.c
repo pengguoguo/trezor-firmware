@@ -35,6 +35,8 @@
 #include "hmac.h"
 #include "layout2.h"
 #include "memory.h"
+
+#include "abckey_reset.h"
 #include "memzero.h"
 #include "messages.h"
 #include "messages.pb.h"
@@ -52,6 +54,7 @@
 #include "trezor.h"
 #include "usb.h"
 #include "util.h"
+
 
 #if !BITCOIN_ONLY
 #include "ethereum.h"

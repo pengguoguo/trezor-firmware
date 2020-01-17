@@ -4,7 +4,7 @@ syntax = "proto2";
 option java_package = "com.satoshilabs.trezor.lib.protobuf";
 
 message  ReqMnemonic{                           
-    required bytes req = 1;
+    required uint32 req_index = 1;
 }
 
 message RspMnemonic{
