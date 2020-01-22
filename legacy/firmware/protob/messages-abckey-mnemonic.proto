@@ -3,10 +3,36 @@ syntax = "proto2";
 // Sugar for easier handling in Java
 option java_package = "com.satoshilabs.trezor.lib.protobuf";
 
-message  ReqMnemonic{                           
-    required uint32 req_index = 1;
+message  ReqMnemonic{
 }
 
 message RspMnemonic{
 	required bytes mnemonic = 1;
+}
+
+message ConfirmMnmonic{
+	optional PCRespondType code = 1;
+    /**
+    * Type of button request
+    */
+    enum PCRespondType {
+        PCRespond_Other = 1;
+        PCRespond_FeeOverThreshold = 2;
+        PCRespond_ConfirmOutput = 3;
+        PCRespond_ResetDevice = 4;
+        PCRespond_ConfirmWord = 5;
+        PCRespond_WipeDevice = 6;
+        PCRespond_ProtectCall = 7;
+        PCRespond_SignTx = 8;
+        PCRespond_FirmwareCheck = 9;
+        PCRespond_Address = 10;
+        PCRespond_PublicKey = 11;
+        PCRespond_MnemonicWordCount = 12;
+        PCRespond_MnemonicInput = 13;
+        PCRespond_PassphraseType = 14;
+        PCRespond_UnknownDerivationPath = 15;
+        PCRespond_RecoveryHomepage = 16;
+        PCRespond_Success = 17;
+        PCRespond_Warning = 18;
+    }
 }

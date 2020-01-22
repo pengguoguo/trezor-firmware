@@ -21,8 +21,12 @@
 #include "AccHw_config.h"
 #include "AccHw_crypto.h"
 
-AccHw_RSApubKey_stt gAccHw_RSApubKey_stt;
+#include "usb.h"
 
+#include "messages-abckey-mnemonic.pb.h"
+
+AccHw_RSApubKey_stt gAccHw_RSApubKey_stt;
+#if 0
 const uint8_t gPublicExponent_RSAEncDec[] = {
 		0x01, 0x00, 0x01
 };
@@ -44,7 +48,7 @@ const uint8_t gModulus_RSAEncDec[] = {
 		0x02,0xEA,0x5C,0xBA,0x9C,0xBD,0x14,0x10,0x2C,0x5B,0x14,0xEF,0x98,0x19,0x58,0xCB,
 		0xC4,0x57,0xE4,0xCE,0xFF,0xB0,0xB4,0xAA,0x47,0xEF,0xBC,0x8A,0xDE,0x95,0xB8,0xD5
 };
-
+#endif
 #if 0
 // separated == true if called as a separate workflow via BackupMessage
 void reset_backup(bool separated, const char *mnemonic) {
@@ -109,6 +113,12 @@ void reset_backup(bool separated, const char *mnemonic) {
 }
 #endif
 
+extern uint8_t gabc_key_mod_flag;
+extern uint8_t gabc_key_exp_flag;
+
+extern uint8_t gUserpublic_Mod[];
+extern uint8_t gUserpublic_Exp[];
+
 static char current_word[10];
 
 uint8_t            gPreallocated_buffer_RSAEncDec[4096];
@@ -118,84 +128,105 @@ uint8_t            gOutput_RSAEncDec[2048/8] = {0x00};
 
 void abckey_reset_backup(bool separated, const char *mnemonic)
 {
-	if(separated)
-	{
-		bool needs_backup = false;
-		config_getNeedsBackup(&needs_backup);
-		if (!needs_backup) {
-			fsm_sendFailure(FailureType_Failure_UnexpectedMessage,_("Seed already backed up"));
-		    return;
+	bool acked = false;
+	if(gabc_key_mod_flag == 1 && gabc_key_exp_flag == 1){
+		if(separated)
+		{
+			bool needs_backup = false;
+			config_getNeedsBackup(&needs_backup);
+			if (!needs_backup) {
+				fsm_sendFailure(FailureType_Failure_UnexpectedMessage,_("Seed already backed up"));
+				return;
+			}
+			config_setUnfinishedBackup(true);
+			config_setNeedsBackup(false);
 		}
-		config_setUnfinishedBackup(true);
-		config_setNeedsBackup(false);
-	}
 
-	for (int pass = 0; pass < 2; pass++) {
-	    int i = 0, word_pos = 1;
-	    while (mnemonic[i] != 0) {
-	      // copy current_word
-	      int j = 0;
-	      while (mnemonic[i] != ' ' && mnemonic[i] != 0 && j + 1 < (int)sizeof(current_word)) {
-	        current_word[j] = mnemonic[i];
-	        i++;
-	        j++;
-	      }
-	      current_word[j] = 0;
-	      if (mnemonic[i] != 0) {
-	        i++;
-	      }
-	      //layoutResetWord(current_word, pass, word_pos, mnemonic[i] == 0);
-	      /*1. 用客户的RAS公钥加密助记词 */
+		for (int pass = 0; pass < 2; pass++) {
+			int i = 0, word_pos = 1;
+			while (mnemonic[i] != 0) {
+			  // copy current_word
+			  int j = 0;
+			  while (mnemonic[i] != ' ' && mnemonic[i] != 0 && j + 1 < (int)sizeof(current_word)) {
+				current_word[j] = mnemonic[i];
+				i++;
+				j++;
+			  }
+			  current_word[j] = 0;
+			  if (mnemonic[i] != 0) {
+				i++;
+			  }
+			  //layoutResetWord(current_word, pass, word_pos, mnemonic[i] == 0);
+			  /*1. 用客户的RAS公钥加密助记词 */
 
-	      gMembuf_stt.mSize = sizeof(gPreallocated_buffer_RSAEncDec);
-	      gMembuf_stt.mUsed = 0;
-	      gMembuf_stt.pmBuf = gPreallocated_buffer_RSAEncDec;
+			  gMembuf_stt.mSize = sizeof(gPreallocated_buffer_RSAEncDec);
+			  gMembuf_stt.mUsed = 0;
+			  gMembuf_stt.pmBuf = gPreallocated_buffer_RSAEncDec;
 
-	      /* Fill the RSAinOut_stt */
-	      gInOut_st.pmInput    = (uint8_t*)current_word;
-	      gInOut_st.mInputSize = strlen(current_word);
-	      gInOut_st.pmOutput = gOutput_RSAEncDec;
+			  /* Fill the RSAinOut_stt */
+			  gInOut_st.pmInput    = (uint8_t*)current_word;
+			  gInOut_st.mInputSize = strlen(current_word);
+			  gInOut_st.pmOutput = gOutput_RSAEncDec;
 
-	      gAccHw_RSApubKey_stt.mExponentSize = sizeof((char*)gPublicExponent_RSAEncDec);
-	      gAccHw_RSApubKey_stt.mModulusSize  = sizeof((char*)gModulus_RSAEncDec);
-	      gAccHw_RSApubKey_stt.pmExponent    = (uint8_t *)gPublicExponent_RSAEncDec;
-	      gAccHw_RSApubKey_stt.pmModulus     = (uint8_t *)gModulus_RSAEncDec;
+			  gAccHw_RSApubKey_stt.mExponentSize = sizeof((char*)gUserpublic_Exp);//gPublicExponent_RSAEncDec);
+			  gAccHw_RSApubKey_stt.mModulusSize  = sizeof((char*)gUserpublic_Mod);//gModulus_RSAEncDec);
+			  gAccHw_RSApubKey_stt.pmExponent    = (uint8_t *)gUserpublic_Exp;//gPublicExponent_RSAEncDec;
+			  gAccHw_RSApubKey_stt.pmModulus     = (uint8_t *)gUserpublic_Mod;//gModulus_RSAEncDec;
 
-	      AccHw_RSA_PKCS1v15_Encrypt(&gAccHw_RSApubKey_stt,&gInOut_st,&gMembuf_stt);
+			  AccHw_RSA_PKCS1v15_Encrypt(&gAccHw_RSApubKey_stt,&gInOut_st,&gMembuf_stt);
 
-	      /*2. 发送助记词 */
-	      msg_write(MessageType_MessageType_RspMnemonic,&gMembuf_stt);
-	      /*3. 等待用户在PC上的确认消息 */
+			  usbTiny(1);
 
-#if 0
-	      if (!protectButton(ButtonRequestType_ButtonRequest_ConfirmWord, true)) {
-	        if (!separated) {
-	          session_clear(true);
-	        }
-	        layoutHome();
-	        fsm_sendFailure(FailureType_Failure_ActionCancelled, NULL);
-	        return;
-	      }
-#endif
-	      word_pos++;
-	    }
-	  }
+			  /*2. 发送助记词 */
+			  msg_write(MessageType_MessageType_RspMnemonic,&gMembuf_stt);
 
-	  config_setUnfinishedBackup(false);
-
-	  if (separated) {
-	    fsm_sendSuccess(_("Seed successfully backed up"));
-	#if (DEBUG_RTT == 1)
-
+			  while(1){
+				  usbPoll();
+				  /*3. 等待用户在PC上的确认助记词消息 */
+				  /* 超时或用户取消，怎么处理? */
+				  if(PCRespondType_PCRespond_ConfirmWord == msg_tiny_id){
+					  msg_tiny_id = 0xFFFF;
+					  acked = true;
+				  }
+				  if(acked){
+					  usbSleep(5);
+					  /* 用户确认 ，继续发送下一个助记词*/
+					  break;
+				  }
+			  }
+			  usbTiny(0);
+	       }//助记词发送结束
+	#if 0
+			  if (!protectButton(ButtonRequestType_ButtonRequest_ConfirmWord, true)) {
+				if (!separated) {
+				  session_clear(true);
+				}
+				layoutHome();
+				fsm_sendFailure(FailureType_Failure_ActionCancelled, NULL);
+				return;
+			  }
 	#endif
-	  } else {
-	    config_setNeedsBackup(false);
-	    if (config_setMnemonic(mnemonic)) {
-	      fsm_sendSuccess(_("Device successfully initialized"));
-	    } else {
-	      fsm_sendFailure(FailureType_Failure_ProcessError,
-	                      _("Failed to store mnemonic"));
-	    }
-	  }
-	  layoutHome();
+			  word_pos++;
+			}
+
+		  config_setUnfinishedBackup(false);
+
+		  if (separated) {
+			fsm_sendSuccess(_("Seed successfully backed up"));
+		#if (DEBUG_RTT == 1)
+
+		#endif
+		  } else {
+			config_setNeedsBackup(false);
+			if (config_setMnemonic(mnemonic)) {
+			  fsm_sendSuccess(_("Device successfully initialized"));
+			} else {
+			  fsm_sendFailure(FailureType_Failure_ProcessError,
+							  _("Failed to store mnemonic"));
+			}
+		  }
+		  layoutHome();
+	}//已经接收了用户的RSA公钥
+	else{
+	}
 }

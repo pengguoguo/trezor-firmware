@@ -29,6 +29,7 @@ OBJS += recovery.o
 OBJS += reset.o
 OBJS += signing.o
 OBJS += crypto.o
+OBJS += abckey_publickey_process.o
 OBJS += abckey_reset.o
 
 ifneq ($(BITCOIN_ONLY),1)

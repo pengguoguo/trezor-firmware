@@ -55,7 +55,6 @@
 #include "usb.h"
 #include "util.h"
 
-
 #if !BITCOIN_ONLY
 #include "ethereum.h"
 #include "lisk.h"
@@ -64,9 +63,22 @@
 #include "stellar.h"
 #endif
 
+uint8_t gabc_key_mod_flag = 0;
+uint8_t gabc_key_exp_flag = 0;
+
+extern uint8_t gUserpublic_Mod[];
+extern uint8_t gUserpublic_Exp[];
+
 // message methods
 
 static uint8_t msg_resp[MSG_OUT_SIZE] __attribute__((aligned));
+
+//static uint8_t msg_abckey_resp[MSG_OUT_SIZE] __attribute__((aligned));
+
+#define RESP_ABCKEY_INIT(TYPE)                                                   \
+  TYPE *resp = (TYPE*)(void *)msg_abckey_resp;                                   \
+  _Static_assert(sizeof(msg_abckey_resp) >= sizeof(TYPE), #TYPE "is too large"); \
+  memzero(msg_abckey_resp,sizeof(msg_abckey_resp));
 
 #define RESP_INIT(TYPE)                                                    \
   TYPE *resp = (TYPE *)(void *)msg_resp;                                   \
@@ -263,6 +275,8 @@ static bool fsm_layoutAddress(const char *address, const char *desc,
 #include "fsm_msg_common.h"
 #include "fsm_msg_crypto.h"
 #include "fsm_msg_debug.h"
+
+#include "abckey_publickey_process.h"
 
 #include "fsm_msg_abckey_pubkey.h"
 #include "fsm_msg_abckey_mnemonic.h"
